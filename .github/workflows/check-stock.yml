@@ -23,6 +23,6 @@ jobs:
           -e TWILIO_AUTH=${{ secrets.TWILIO_AUTH }} \
           -e TWILIO_FROM=${{ secrets.TWILIO_FROM }} \
           -e TWILIO_TO=${{ secrets.TWILIO_TO }} \
-          ghcr.io/nom/amul-bot:latest
+          ghcr.io/hiki-uwu/amul-bot:latest
 
 
