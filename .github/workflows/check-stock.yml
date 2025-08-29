@@ -1,17 +1,15 @@
 name: check-stock
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # Enables the "Run workflow" button in Actions
   schedule:
-    - cron: "*/30 * * * *" # every 30 minutes
+    - cron: "*/30 * * * *"  # Runs every 30 minutes
 
 jobs:
   run-container:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      # Authenticate with GHCR
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -19,26 +17,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Load cached image if present
+      # Restore cached Docker image if available
+      - name: Restore cached image
         uses: actions/cache@v3
         with:
           path: /tmp/docker-cache
-          key: docker-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            docker-${{ runner.os }}-
+          key: docker-image-amul-bot
 
-      - name: Pull image (or use cached)
+      # Pull if no cache exists, otherwise load from cache
+      - name: Load or Pull Image
         run: |
           mkdir -p /tmp/docker-cache
           if [ -f /tmp/docker-cache/amul-bot.tar ]; then
-            echo "Loading cached Docker image..."
+            echo "Loading Docker image from cache..."
             docker load -i /tmp/docker-cache/amul-bot.tar
           else
-            echo "Pulling image and caching..."
+            echo "Pulling image from GHCR and caching..."
             docker pull ghcr.io/hiki-uwu/amul-bot:latest
             docker save ghcr.io/hiki-uwu/amul-bot:latest -o /tmp/docker-cache/amul-bot.tar
           fi
 
+      # Run the container with environment variables
       - name: Run container
         run: |
           docker run --rm \
