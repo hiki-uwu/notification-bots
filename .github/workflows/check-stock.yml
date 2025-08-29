@@ -1,4 +1,4 @@
-name: Run Pre-Built Docker Image with Cache
+name: check-stock
 
 on:
   schedule:
